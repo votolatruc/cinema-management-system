@@ -1,0 +1,9 @@
+{
+  "name": "cinema-management-system",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix cinema-cms/frontend run dev",
+    "build": "npm --prefix cinema-cms/frontend run build",
+    "preview": "npm --prefix cinema-cms/frontend run preview"
+  }
+}
