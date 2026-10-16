@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <linearGradient id="noirbg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#f43f5e" />
+    </linearGradient>
+    <linearGradient id="noirfade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.1" />
+      <stop offset="50%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#020617" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#noirbg)" />
+
+  <!-- City Skyline Silhouette -->
+  <rect x="50" y="220" width="80" height="400" fill="#090d16" />
+  <rect x="150" y="160" width="100" height="460" fill="#0f172a" />
+  <!-- Landmark 81 / Bitexco tower shape -->
+  <polygon points="200,80 215,160 185,160" fill="#38bdf8" opacity="0.8" />
+  <rect x="270" y="250" width="70" height="370" fill="#0b1120" />
+  <rect x="360" y="190" width="90" height="430" fill="#0f172a" />
+  <rect x="470" y="270" width="90" height="350" fill="#090d16" />
+
+  <!-- Rain Drops streaks -->
+  <g stroke="#38bdf8" stroke-width="1" opacity="0.35">
+    <line x1="80" y1="40" x2="60" y2="180" />
+    <line x1="220" y1="90" x2="200" y2="230" />
+    <line x1="380" y1="50" x2="360" y2="190" />
+    <line x1="520" y1="120" x2="500" y2="260" />
+    <line x1="140" y1="310" x2="120" y2="450" />
+    <line x1="440" y1="340" x2="420" y2="480" />
+  </g>
+
+  <!-- Wet Street Reflection -->
+  <ellipse cx="300" cy="620" rx="250" ry="20" fill="url(#neon)" opacity="0.3" filter="blur(8px)" />
+
+  <!-- Detective in Trench Coat & Fedora Silhouette -->
+  <g transform="translate(300, 520)">
+    <!-- Fedora Hat -->
+    <ellipse cx="0" cy="-65" rx="35" ry="8" fill="#020617" />
+    <path d="M -22 -65 C -20 -85 20 -85 22 -65 Z" fill="#020617" />
+    <!-- Coat Collar & Silhouette -->
+    <path d="M -30 -40 C -15 -55 15 -55 30 -40 L 40 90 L -40 90 Z" fill="#020617" />
+    <!-- Cigarette ember -->
+    <circle cx="8" cy="-48" r="2.5" fill="#f97316" filter="drop-shadow(0 0 4px #ffedd5)" />
+  </g>
+
+  <rect width="100%" height="100%" fill="url(#noirfade)" />
+
+  <!-- Age Badge -->
+  <rect x="35" y="35" width="55" height="30" rx="6" fill="#ea580c" />
+  <text x="62" y="56" font-family="system-ui, sans-serif" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">T16</text>
+
+  <!-- Poster Typography -->
+  <g transform="translate(300, 750)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="30" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">BÓNG ĐÊM SÀI GÒN</text>
+    <text x="0" y="32" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#38bdf8" text-anchor="middle" letter-spacing="4">HỒ SƠ MẬT</text>
+    <text x="0" y="65" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">VICTOR VŨ • TRẦN NGHĨA • KHÁNH VÂN</text>
+    <text x="0" y="92" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#f43f5e" text-anchor="middle" letter-spacing="2">ĐỊNH DẠNG: 2D DIGITAL • GOLD CLASS</text>
+  </g>
+</svg>

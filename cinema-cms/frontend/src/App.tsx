@@ -309,9 +309,9 @@ const getSeatUnitPrice = (basePrice: number, category: SeatCategory): number => 
 // 3. SEED DATA (2 CINEMAS, 4 AUDITORIUMS, 10 MOVIES, SHOWTIMES, BOOKINGS, PROMOS)
 // ============================================================================
 
-const HERO_BANNER_IMG = "user_uploaded_files/ttl=63d/tool_generated/watermarked_img_13077797427459825343.jpg";
-const POSTER_SCIFI_IMG = "user_uploaded_files/ttl=63d/tool_generated/watermarked_img_5286706012372143113.jpg";
-const POSTER_NOIR_IMG = "user_uploaded_files/ttl=63d/tool_generated/watermarked_img_13947686845114443961.jpg";
+const HERO_BANNER_IMG = "/images/hero-banner.svg";
+const POSTER_SCIFI_IMG = "/images/poster-scifi.svg";
+const POSTER_NOIR_IMG = "/images/poster-noir.svg";
 
 const INITIAL_CINEMAS: Cinema[] = [
   {

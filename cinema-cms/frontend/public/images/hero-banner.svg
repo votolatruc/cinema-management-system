@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090514" />
+      <stop offset="50%" stop-color="#1f092b" />
+      <stop offset="100%" stop-color="#540b0e" />
+    </linearGradient>
+    <radialGradient id="nebula" cx="60%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#e63946" stop-opacity="0.6" />
+      <stop offset="60%" stop-color="#9d0208" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="portal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#ffb703" />
+      <stop offset="50%" stop-color="#d90429" />
+      <stop offset="85%" stop-color="#03071e" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="overlay" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#090a0f" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#090a0f" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#090a0f" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#bg)" />
+  <rect width="100%" height="100%" fill="url(#nebula)" />
+
+  <!-- Stars -->
+  <g fill="#ffffff" opacity="0.6">
+    <circle cx="120" cy="80" r="1.5" /><circle cx="340" cy="190" r="1" /><circle cx="560" cy="90" r="2" />
+    <circle cx="890" cy="140" r="1.2" /><circle cx="1120" cy="220" r="1.5" /><circle cx="1340" cy="80" r="2" />
+    <circle cx="1450" cy="310" r="1" /><circle cx="210" cy="420" r="1.8" /><circle cx="430" cy="350" r="1.2" />
+    <circle cx="780" cy="450" r="2" /><circle cx="1250" cy="410" r="1.5" /><circle cx="1500" cy="520" r="1.2" />
+  </g>
+
+  <!-- Wormhole Event Horizon -->
+  <g transform="translate(1000, 380)">
+    <circle cx="0" cy="0" r="240" fill="url(#portal)" />
+    <ellipse cx="0" cy="0" rx="360" ry="90" fill="none" stroke="#fb8500" stroke-width="6" opacity="0.8" transform="rotate(-25)" />
+    <ellipse cx="0" cy="0" rx="380" ry="100" fill="none" stroke="#e63946" stroke-width="2" opacity="0.5" transform="rotate(-25)" />
+    <circle cx="0" cy="0" r="90" fill="#03071e" />
+  </g>
+
+  <!-- Spaceship Silhouette -->
+  <path d="M 450 320 L 580 340 L 490 355 L 450 365 L 430 350 Z" fill="#000000" opacity="0.85" />
+  <polygon points="580,340 600,342 585,346" fill="#00f5d4" opacity="0.9" />
+
+  <!-- Gradient Overlay -->
+  <rect width="100%" height="100%" fill="url(#overlay)" />
+
+  <!-- Cinematic Badge & Title -->
+  <g transform="translate(120, 680)">
+    <rect x="0" y="-80" width="180" height="34" rx="6" fill="#e63946" />
+    <text x="90" y="-58" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">IMAX LASER</text>
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="52" font-weight="900" fill="#ffffff" letter-spacing="1">CHÂN TRỜI SỰ KIỆN: KỶ NGUYÊN ĐỎ</text>
+    <text x="0" y="38" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#ffb703" letter-spacing="3">EVENT HORIZON: CRIMSON ERA • 2026</text>
+    <text x="0" y="74" font-family="system-ui, sans-serif" font-size="15" fill="#cbd5e1">Khởi chiếu độc quyền tại hệ thống cụm rạp CMS toàn quốc</text>
+  </g>
+</svg>

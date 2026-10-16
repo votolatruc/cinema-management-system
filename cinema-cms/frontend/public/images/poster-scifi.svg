@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <linearGradient id="scifibg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050814" />
+      <stop offset="40%" stop-color="#140826" />
+      <stop offset="80%" stop-color="#590d22" />
+      <stop offset="100%" stop-color="#800f2f" />
+    </linearGradient>
+    <radialGradient id="planet" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#ff4d6d" />
+      <stop offset="50%" stop-color="#c9184a" />
+      <stop offset="85%" stop-color="#590d22" />
+      <stop offset="100%" stop-color="#0b090a" />
+    </radialGradient>
+    <linearGradient id="postfade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.2" />
+      <stop offset="60%" stop-color="#000000" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#050814" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <rect width="100%" height="100%" fill="url(#scifibg)" />
+
+  <!-- Stars -->
+  <g fill="#ffffff" opacity="0.7">
+    <circle cx="80" cy="120" r="1.5" /><circle cx="210" cy="70" r="1" /><circle cx="450" cy="140" r="2" />
+    <circle cx="510" cy="290" r="1.5" /><circle cx="120" cy="340" r="1.2" /><circle cx="490" cy="80" r="1" />
+  </g>
+
+  <!-- Giant Alien Planet -->
+  <circle cx="300" cy="360" r="180" fill="url(#planet)" />
+  <ellipse cx="300" cy="360" rx="270" ry="45" fill="none" stroke="#ff758f" stroke-width="5" opacity="0.7" transform="rotate(-15 300 360)" />
+
+  <!-- Astronaut / Solitary Explorer Silhouette -->
+  <g transform="translate(300, 610)">
+    <!-- Helmet -->
+    <circle cx="0" cy="-60" r="28" fill="#1b263b" stroke="#e0e1dd" stroke-width="2" />
+    <ellipse cx="2" cy="-62" rx="18" ry="14" fill="#ffb703" opacity="0.9" />
+    <!-- Shoulders & Body -->
+    <path d="M -35 -30 C -25 -50 25 -50 35 -30 L 45 40 L -45 40 Z" fill="#0d1b2a" />
+  </g>
+
+  <!-- Bottom Dark Gradient -->
+  <rect width="100%" height="100%" fill="url(#postfade)" />
+
+  <!-- Age Badge -->
+  <rect x="35" y="35" width="55" height="30" rx="6" fill="#e63946" />
+  <text x="62" y="56" font-family="system-ui, sans-serif" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">T13</text>
+
+  <!-- Poster Typography -->
+  <g transform="translate(300, 750)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="30" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">CHÂN TRỜI SỰ KIỆN</text>
+    <text x="0" y="32" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#ff758f" text-anchor="middle" letter-spacing="4">KỶ NGUYÊN ĐỎ</text>
+    <text x="0" y="65" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">DENIS TRẦN • LÂM VŨ • MINH TUYẾT</text>
+    <text x="0" y="92" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="2">ĐỊNH DẠNG: IMAX LASER • DOLBY ATMOS</text>
+  </g>
+</svg>
