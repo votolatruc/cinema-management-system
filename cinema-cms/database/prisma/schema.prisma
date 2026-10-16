@@ -1,0 +1,560 @@
+// ==========================================================
+// CINEMA MANAGEMENT SYSTEM (CMS) - PRISMA SCHEMA (PostgreSQL)
+// Timezone convention: UTC stored in DB, rendered in Asia/Ho_Chi_Minh
+// Currency: VND stored as Decimal(14, 0) to prevent floating-point issues
+// ==========================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  LOCKED
+  INACTIVE
+}
+
+enum MovieStatus {
+  COMING_SOON
+  NOW_SHOWING
+  ENDED
+}
+
+enum AgeRating {
+  P
+  K
+  T13
+  T16
+  T18
+}
+
+enum AuditoriumType {
+  STANDARD_2D
+  THREE_D
+  IMAX
+  GOLD_CLASS
+  FOUR_DX
+}
+
+enum SeatCategory {
+  STANDARD
+  VIP
+  COUPLE
+  DISABLED
+}
+
+enum ShowtimeStatus {
+  SCHEDULED
+  OPEN_FOR_SALE
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  ONLINE_GATEWAY
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum CustomerTier {
+  MEMBER
+  SILVER
+  GOLD
+  DIAMOND
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  phone        String      @unique
+  passwordHash String      @map("password_hash")
+  fullName     String      @map("full_name")
+  status       UserStatus  @default(ACTIVE)
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  deletedAt    DateTime?   @map("deleted_at")
+
+  userRoles    UserRole[]
+  customer     Customer?
+  employee     Employee?
+  auditLogs    AuditLog[]
+  seatHolds    SeatHold[]
+
+  @@index([email])
+  @@index([phone])
+  @@map("users")
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  code            String           @unique // ADMIN, MANAGER, STAFF, CUSTOMER
+  name            String
+  description     String?
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  code            String           @unique // e.g., movie:write, booking:create, report:read
+  module          String
+  description     String?
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  userId    String   @map("user_id")
+  roleId    String   @map("role_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String     @map("role_id")
+  permissionId String     @map("permission_id")
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Cinema {
+  id           String       @id @default(uuid())
+  code         String       @unique
+  name         String
+  address      String
+  city         String
+  phone        String
+  email        String
+  openingHours String       @map("opening_hours")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deletedAt    DateTime?    @map("deleted_at")
+
+  auditoriums  Auditorium[]
+  employees    Employee[]
+
+  @@index([city])
+  @@map("cinemas")
+}
+
+model Auditorium {
+  id          String         @id @default(uuid())
+  cinemaId    String         @map("cinema_id")
+  code        String         @unique
+  name        String
+  type        AuditoriumType @default(STANDARD_2D)
+  capacity    Int
+  rowCount    Int            @map("row_count")
+  colCount    Int            @map("col_count")
+  isActive    Boolean        @default(true) @map("is_active")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  deletedAt   DateTime?      @map("deleted_at")
+
+  cinema      Cinema         @relation(fields: [cinemaId], references: [id])
+  seats       Seat[]
+  showtimes   Showtime[]
+
+  @@index([cinemaId])
+  @@map("auditoriums")
+}
+
+model SeatType {
+  id            String       @id @default(uuid())
+  code          SeatCategory @unique
+  name          String
+  surchargeRate Decimal      @db.Decimal(14, 0) @map("surcharge_rate")
+  colorHex      String       @map("color_hex")
+
+  seats         Seat[]
+
+  @@map("seat_types")
+}
+
+model Seat {
+  id           String       @id @default(uuid())
+  auditoriumId String       @map("auditorium_id")
+  seatTypeId   String       @map("seat_type_id")
+  seatCode     String       @map("seat_code") // e.g., A1, E8
+  rowLabel     String       @map("row_label")
+  colNumber    Int          @map("col_number")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  auditorium   Auditorium   @relation(fields: [auditoriumId], references: [id], onDelete: Cascade)
+  seatType     SeatType     @relation(fields: [seatTypeId], references: [id])
+  seatHolds    SeatHold[]
+  bookingSeats BookingSeat[]
+  tickets      Ticket[]
+
+  @@unique([auditoriumId, seatCode])
+  @@unique([auditoriumId, rowLabel, colNumber])
+  @@index([auditoriumId])
+  @@map("seats")
+}
+
+model Movie {
+  id              String       @id @default(uuid())
+  code            String       @unique
+  titleVi         String       @map("title_vi")
+  titleOriginal   String       @map("title_original")
+  synopsis        String       @db.Text
+  posterUrl       String       @map("poster_url")
+  trailerUrl      String       @map("trailer_url")
+  director        String
+  castList        String       @map("cast_list")
+  durationMinutes Int          @map("duration_minutes")
+  language        String
+  formats         String       // e.g. "2D, 3D, IMAX"
+  ageRating       AgeRating    @map("age_rating")
+  releaseDate     DateTime     @map("release_date")
+  endDate         DateTime     @map("end_date")
+  status          MovieStatus  @default(NOW_SHOWING)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  deletedAt       DateTime?    @map("deleted_at")
+
+  movieGenres     MovieGenre[]
+  showtimes       Showtime[]
+
+  @@index([status])
+  @@index([titleVi])
+  @@map("movies")
+}
+
+model Genre {
+  id          String       @id @default(uuid())
+  code        String       @unique
+  name        String
+  description String?
+
+  movieGenres MovieGenre[]
+
+  @@map("genres")
+}
+
+model MovieGenre {
+  movieId String @map("movie_id")
+  genreId String @map("genre_id")
+
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, genreId])
+  @@map("movie_genres")
+}
+
+model Showtime {
+  id           String         @id @default(uuid())
+  movieId      String         @map("movie_id")
+  auditoriumId String         @map("auditorium_id")
+  showDate     DateTime       @map("show_date") @db.Date
+  startTime    DateTime       @map("start_time")
+  endTime      DateTime       @map("end_time")
+  format       String         // 2D Phụ đề, 3D Lồng tiếng, IMAX 2D
+  basePrice    Decimal        @db.Decimal(14, 0) @map("base_price")
+  status       ShowtimeStatus @default(OPEN_FOR_SALE)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  movie        Movie          @relation(fields: [movieId], references: [id])
+  auditorium   Auditorium     @relation(fields: [auditoriumId], references: [id])
+  seatHolds    SeatHold[]
+  bookings     Booking[]
+  bookingSeats BookingSeat[]
+  tickets      Ticket[]
+
+  @@index([auditoriumId, startTime, endTime])
+  @@index([movieId, showDate])
+  @@map("showtimes")
+}
+
+model SeatHold {
+  id         String   @id @default(uuid())
+  showtimeId String   @map("showtime_id")
+  seatId     String   @map("seat_id")
+  userId     String?  @map("user_id")
+  sessionKey String   @map("session_key")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seat       Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@unique([showtimeId, seatId])
+  @@index([expiresAt])
+  @@map("seat_holds")
+}
+
+model Customer {
+  id             String               @id @default(uuid())
+  userId         String               @unique @map("user_id")
+  code           String               @unique
+  loyaltyPoints  Int                  @default(0) @map("loyalty_points")
+  totalTickets   Int                  @default(0) @map("total_tickets")
+  totalSpent     Decimal              @default(0) @db.Decimal(14, 0) @map("total_spent")
+  tier           CustomerTier         @default(MEMBER)
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+
+  user           User                 @relation(fields: [userId], references: [id])
+  bookings       Booking[]
+  promotionUsages PromotionUsage[]
+  loyaltyTx      LoyaltyTransaction[]
+
+  @@map("customers")
+}
+
+model Employee {
+  id         String    @id @default(uuid())
+  userId     String    @unique @map("user_id")
+  cinemaId   String    @map("cinema_id")
+  code       String    @unique
+  position   String
+  hireDate   DateTime  @default(now()) @map("hire_date")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  user       User      @relation(fields: [userId], references: [id])
+  cinema     Cinema    @relation(fields: [cinemaId], references: [id])
+  bookings   Booking[] @relation("StaffBookings")
+
+  @@index([cinemaId])
+  @@map("employees")
+}
+
+model Promotion {
+  id                String           @id @default(uuid())
+  code              String           @unique
+  name              String
+  description       String
+  discountType      DiscountType     @map("discount_type")
+  discountValue     Decimal          @db.Decimal(14, 0) @map("discount_value")
+  maxDiscountAmount Decimal?         @db.Decimal(14, 0) @map("max_discount_amount")
+  minOrderAmount    Decimal          @default(0) @db.Decimal(14, 0) @map("min_order_amount")
+  startDate         DateTime         @map("start_date")
+  endDate           DateTime         @map("end_date")
+  usageLimit        Int              @map("usage_limit")
+  usedCount         Int              @default(0) @map("used_count")
+  perCustomerLimit  Int              @default(1) @map("per_customer_limit")
+  applicableMovieId String?          @map("applicable_movie_id")
+  isActive          Boolean          @default(true) @map("is_active")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  usages            PromotionUsage[]
+  bookings          Booking[]
+
+  @@index([code, isActive])
+  @@map("promotions")
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  bookingCode    String        @unique @map("booking_code")
+  customerId     String?       @map("customer_id")
+  customerName   String        @map("customer_name")
+  customerPhone  String        @map("customer_phone")
+  customerEmail  String        @map("customer_email")
+  showtimeId     String        @map("showtime_id")
+  staffId        String?       @map("staff_id")
+  promotionId    String?       @map("promotion_id")
+  subtotalAmount Decimal       @db.Decimal(14, 0) @map("subtotal_amount")
+  discountAmount Decimal       @default(0) @db.Decimal(14, 0) @map("discount_amount")
+  finalAmount    Decimal       @db.Decimal(14, 0) @map("final_amount")
+  paymentMethod  PaymentMethod @map("payment_method")
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  customer       Customer?     @relation(fields: [customerId], references: [id])
+  showtime       Showtime      @relation(fields: [showtimeId], references: [id])
+  staff          Employee?     @relation("StaffBookings", fields: [staffId], references: [id])
+  promotion      Promotion?    @relation(fields: [promotionId], references: [id])
+  bookingSeats   BookingSeat[]
+  tickets        Ticket[]
+  payments       Payment[]
+  refunds        Refund[]
+  promotionUsage PromotionUsage?
+
+  @@index([bookingCode])
+  @@index([showtimeId, status])
+  @@index([createdAt])
+  @@map("bookings")
+}
+
+// Strict uniqueness constraint per showtimeId + seatId for active bookings
+model BookingSeat {
+  id         String   @id @default(uuid())
+  bookingId  String   @map("booking_id")
+  showtimeId String   @map("showtime_id")
+  seatId     String   @map("seat_id")
+  unitPrice  Decimal  @db.Decimal(14, 0) @map("unit_price")
+  isActive   Boolean  @default(true) @map("is_active") // Set to false only if refunded/cancelled via DB trigger or partial index
+
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  showtime   Showtime @relation(fields: [showtimeId], references: [id])
+  seat       Seat     @relation(fields: [seatId], references: [id])
+
+  @@unique([showtimeId, seatId])
+  @@map("booking_seats")
+}
+
+model Ticket {
+  id         String    @id @default(uuid())
+  ticketCode String    @unique @map("ticket_code")
+  bookingId  String    @map("booking_id")
+  showtimeId String    @map("showtime_id")
+  seatId     String    @map("seat_id")
+  qrPayload  String    @map("qr_payload")
+  price      Decimal   @db.Decimal(14, 0)
+  isCheckedIn Boolean  @default(false) @map("is_checked_in")
+  checkedInAt DateTime? @map("checked_in_at")
+  isValid    Boolean   @default(true) @map("is_valid")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  booking    Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  showtime   Showtime  @relation(fields: [showtimeId], references: [id])
+  seat       Seat      @relation(fields: [seatId], references: [id])
+
+  @@unique([showtimeId, seatId])
+  @@index([ticketCode])
+  @@map("tickets")
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String        @map("booking_id")
+  transactionRef    String        @unique @map("transaction_ref")
+  provider          String        // CASH_COUNTER, VIETQR_DEMO, VNPAY_SANDBOX
+  method            PaymentMethod
+  amount            Decimal       @db.Decimal(14, 0)
+  status            PaymentStatus @default(PENDING)
+  idempotencyKey    String        @unique @map("idempotency_key")
+  signatureVerified Boolean       @default(false) @map("signature_verified")
+  paidAt            DateTime?     @map("paid_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+
+  booking           Booking       @relation(fields: [bookingId], references: [id])
+  refunds           Refund[]
+
+  @@index([bookingId])
+  @@map("payments")
+}
+
+model Refund {
+  id          String   @id @default(uuid())
+  bookingId   String   @map("booking_id")
+  paymentId   String   @map("payment_id")
+  amount      Decimal  @db.Decimal(14, 0)
+  reason      String
+  processedBy String   @map("processed_by")
+  refundedAt  DateTime @default(now()) @map("refunded_at")
+
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  payment     Payment  @relation(fields: [paymentId], references: [id])
+
+  @@map("refunds")
+}
+
+model PromotionUsage {
+  id             String    @id @default(uuid())
+  promotionId    String    @map("promotion_id")
+  customerId     String?   @map("customer_id")
+  bookingId      String    @unique @map("booking_id")
+  discountAmount Decimal   @db.Decimal(14, 0) @map("discount_amount")
+  usedAt         DateTime  @default(now()) @map("used_at")
+
+  promotion      Promotion @relation(fields: [promotionId], references: [id])
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  booking        Booking   @relation(fields: [bookingId], references: [id])
+
+  @@index([promotionId, customerId])
+  @@map("promotion_usages")
+}
+
+model LoyaltyTransaction {
+  id          String   @id @default(uuid())
+  customerId  String   @map("customer_id")
+  bookingId   String?  @map("booking_id")
+  pointsDelta Int      @map("points_delta")
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  @@map("loyalty_transactions")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?  @map("actor_id")
+  actorName  String   @map("actor_name")
+  actorRole  String   @map("actor_role")
+  action     String   // LOGIN, CREATE_SHOWTIME, CHANGE_PRICE, CONFIRM_PAYMENT, REFUND_TICKET, etc.
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  summary    String
+  metadata   Json?    // Sanitized JSON (never stores passwords, tokens, or raw PAN)
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor      User?    @relation(fields: [actorId], references: [id])
+
+  @@index([action, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  key         String   @id
+  value       String
+  description String
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
